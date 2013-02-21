@@ -1,0 +1,33 @@
+\documentclass[11pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage[margin=1in]{geometry}
+\geometry{letterpaper}                   		% ... or a4paper or a5paper or ... 
+%\geometry{landscape}                		% Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+								% TeX will automatically convert eps --> pdf in pdflatex		
+\usepackage{amssymb}
+\usepackage[options]{mcode}
+\usepackage{titling}
+
+\setlength{\droptitle}{-4em}     % Eliminate the default vertical space
+\addtolength{\droptitle}{-8pt}   % Only a guess. Use this for adjustment
+
+\title{Learning Reconfiguration Planning}
+\author{Bryan Hood, Victor Hwang and Jennifer King}
+%\date{}							% Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+
+Imagine a robot attempting to grasp a target object from a cluttered table.  The initial configuration of the object and the clutter prevents a direct grasp.  Instead, the objects on the table must be moved, or reconfigured, to open a space for manipulating the target object.  Planners exist for selecting the order for reconfiguring objects. In addition, these planners select the motion to be used for the reconfiguration.  To solve this optimally, the problem reduces to a discrete search over all possible actions for all objects.  The problem can quickly become complex as objects and actions are added to scenes.  
+
+In \cite{Dogar-RSS-11}, a planning method is proposed which uses backchaining to select the order to reconfigure objects, and greedily chooses the action to apply at each reconfiguration step.  A brief summary of the planner is as follows: First, the planner looks for a collision free path to the goal object. If unsuccessful, the planner ignores all movable objects while planning a trajectory to the goal. The volume swept by the grasp trajectory is considered a negative goal region, (NGR), a region in which obstacles must be removed.  In subsequent steps, the planner recursively searches for actions to move all objects in the NGR. The actions used to move objects out of the NGR also increase the NGR volume. Thus, the NGR represents the sum of the volume of workspace used by all the previously planned actions.  
+
+At each step, the planner searches across all possible actions to remove an object from the negative goal region.  During selection of the action, the planner is agnostic to any objects that have not been manipulated and are outside of the NGR.  This can lead to the NGR growing unnecessarily large and possibly cause planning to fail.   Additionally, because of the search across all action sets, increasing the size of the action set exponentially increases plan time.
+
+We propose to use machine learning techniques to learn a heuristic for selecting actions at each step of the reconfiguration planner.  To do this, we will first build a system which generates reconfiguration plans at random.  We will then execute these plans in simulation, recording the action label selected for each object and a specific set of attributes describing the test. These attributes could include information such as effectiveness, object density, number of objects moved, distance of each moved object, size of the NGR, etc.  Each of these metrics can be used as features for a learner in order to develop better heuristics for use in future planning.   Building a heuristic in such a way will allow the planner to generate action sets which take all other objects into account. We expect that this greedy choice will outperform the agnostic choice made by previous reconfiguration planners. In addition, it will eliminate the need for an exhaustive search of the entire action set at each step of the planner.
+
+To demonstrate the effectiveness of our work, we will compare our planner to that in \cite{Dogar-RSS-11}.  We will consider both efficiency (time to plan and execute) and effectiveness (success rate and number of obstacles moved).  We expect our planner to produce comparably effective plans at a much reduced planning time.
+\bibliographystyle{plain}
+\bibliography{proposal}
+\end{document}
